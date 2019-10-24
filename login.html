@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Admin - Login</title>
+	<meta name="description" content="">
+	<meta name="author" content="templatemo">
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet'
+		type='text/css'>
+	<link href="css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/templatemo-style.css" rel="stylesheet">
+
+	<script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-app.js"></script>
+
+	<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+	<script>
+
+
+		//Firebase configuration
+		var firebaseConfig = {
+			apiKey: "AIzaSyAJrpRz5kz1xvG4wIf6O2PA1iybufHZAJw",
+			authDomain: "post-office17.firebaseapp.com",
+			databaseURL: "https://post-office17.firebaseio.com",
+			projectId: "post-office17",
+			storageBucket: "post-office17.appspot.com",
+			messagingSenderId: "660036150120",
+			appId: "1:660036150120:web:b310162c05c3e81bceacdd"
+		};
+
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+
+
+
+	</script>
+	<script>
+
+		function validateEmail() {
+			var email = document.getElementById("txt_userEmail").value;
+			var at = email.indexOf("@");
+			var dt = email.lastIndexOf(".");
+			var len = email.length;
+
+			if ((at > 2) && (dt - at > 2) && (len - dt > 2)) {
+
+				return true;
+			}
+			else if (email.length == 0) {
+				alert("enter a validate Email");
+				return false;
+			}
+		}
+
+
+		function validatePassword() {
+			var password = document.getElementById("txt_password").value;
+			if (password.length == 0 || password.length < 5) {
+				alert("Please enter a valid password");
+				return false;
+			}
+			return true;
+		}
+
+
+		function validateLogin() {
+			event.preventDefault();
+
+			const validateUnPw = new Promise((resolve1, reject1) => {
+				const getAuth = new Promise(
+					(resolve, reject) => {
+
+						var email = document.getElementById("txt_userEmail").value;
+						var password = document.getElementById("txt_password").value;
+						var reference = firebase.database().ref("User");
+
+
+						reference.once('value', function (snapshot) {
+							snapshot.forEach(function (childSnapshot) {
+								var userEmail = childSnapshot.child("userEmail").val();
+								if (userEmail == email) {
+									resolve(childSnapshot.child("userPassword").val(),childSnapshot.key)
+								}
+							}
+							);
+							reject('Invalid username')
+						});
+
+					}
+				);
+
+				var email = document.getElementById("txt_userEmail").value;
+				var password = document.getElementById("txt_password").value;
+				var reference = firebase.database().ref("User");
+
+				getAuth.then((pw,key) => {
+					if (pw == password) {
+						console.log('returning correct password')
+						resolve1('Done',key);
+					} else {
+						reject1('Fail');
+					}
+				}).catch(message => {
+					reject1('Fail');
+				})
+			})
+
+
+
+			if (validateEmail() && validatePassword()) {
+
+				validateUnPw.then((mes,key) => {					
+				alert("Login Succeeded!!");
+				window.location = "index.html";
+				}).catch(err => {
+				
+				alert('Invalid login details')
+				})
+
+			}
+			else {
+				event.preventDefault();
+			}
+		}
+
+
+		function isValidUserNameAndPassword() {
+
+		}
+
+
+	</script>
+</head>
+
+<body>
+
+	<class="light-gray-bg">
+		<div class="templatemo-content-widget templatemo-login-widget white-bg">
+			<header class="text-center">
+				<div class="square"></div>
+				<h1>Login</h1>
+			</header>
+
+			<form action="index.html" class="templatemo-login-form">
+				<div class="form-group">
+					<div class="input-group">
+						<div class="input-group-addon"><i class="fa fa-user fa-fw"></i></div>
+						<input type="text" class="form-control" id="txt_userEmail" placeholder="user email">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="input-group">
+						<div class="input-group-addon"><i class="fa fa-key fa-fw"></i></div>
+						<input type="password" class="form-control" id="txt_password" placeholder="password">
+					</div>
+				</div>
+
+
+				<div class="col-lg-6 col-md-6 form-group">
+					<label class="control-label templatemo-block">select branch</label>
+					<select class="form-control">
+						<option value="Kandy">Kandy</option>
+						<option value="Kalutara">Kalutara</option>
+						<option value="Galle">Galle</option>
+						<option value="Trinco">Trinco</option>
+						<option value="Colombo">Colombo</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<div class="checkbox squaredTwo">
+						<input type="checkbox" id="c1" name="cc" />
+						<label for="c1"><span></span>Remember me</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="templatemo-blue-button width-100" id="btn_Login"
+						onClick="validateLogin()">Login</button>
+				</div>
+			</form>
+		</div>
+		<div class="templatemo-content-widget templatemo-login-widget templatemo-register-widget white-bg">
+			<p>Not registered yet? <strong><a href="preferences.html" class="blue-text">Sign up now!</a></strong></p>
+		</div>
+
+
+</body>
+
+</html>

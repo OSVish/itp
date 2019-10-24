@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visual Admin Registration</title>
+    <meta name="description" content="">
+    <meta name="author" content="templatemo"
+    <!-- 
+    Visual Admin Template
+    http://www.templatemo.com/preview/templatemo_455_visual_admin
+    -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/templatemo-style.css" rel="stylesheet">
+
+
+<script>
+
+function validateFirstName(){
+		var firstName=document.getElementById("inputFirstName").value;
+		if(firstName.length<=0)
+			{
+				alert("Please enter all the fields");
+				return false;
+			}
+		return true;
+	}
+	
+function validateLastName(){
+		var lastName=document.getElementById("inputLastName").value;
+		if(lastName.length<=0)
+			{
+				alert("Please enter all the fields");
+				return false;
+			}
+		return true;
+	}
+	
+function validateUserName(){
+		var userName=document.getElementById("inputUsername").value;
+		if(userName.length<=0)
+			{
+				alert("Please enter all the fields");
+				return false;
+			}
+		return true;
+	}
+	
+function validateEmail()
+{
+	var email = document.getElementById("inputEmail").value;
+	var at = email.indexOf("@");
+	var dt = email.lastIndexOf(".");
+	var len = email.length;
+	
+	if((at < 2) || (dt-at < 2) || (len-dt < 2))
+	{
+		alert("Please enter validate Email");
+		return false;
+	}
+	return true;
+}
+
+function validatepassword()
+{
+	var pwd = document.getElementById("inputNewPassword").value;
+	var cpwd = document.getElementById("inputConfirmNewPassword").value;
+	
+	if((pwd.length > 5) && (pwd == cpwd))
+	{
+		return true;
+	}
+	alert("Please enter a valid password and confirm password");
+	return false;
+	
+}
+	
+	function clearData()
+	{
+		
+			document.getElementById("inputFirstName").value="";
+			document.getElementById("inputLastName").value="";
+			document.getElementById("inputUsername").value="";
+			document.getElementById("inputEmail").value="";
+			document.getElementById("inputNewPassword").value="";
+			document.getElementById("inputConfirmNewPassword").value="";
+			
+			
+			
+		}
+	
+function validate()
+{
+	if(validateFirstName() && validateLastName() && validateUserName() &&  validateEmail() && validatepassword())
+	{
+		
+		firebase.database().ref("User").push({
+			firstName:document.getElementById("inputFirstName").value,
+			lastName:document.getElementById("inputLastName").value,
+			userName:document.getElementById("inputUsername").value,
+			userEmail:document.getElementById("inputEmail").value,
+			userPassword:document.getElementById("inputNewPassword").value
+			});
+		alert("You have successfully registered");
+		clearData();
+		event.preventDefault();
+		
+	}
+	else
+	{
+		//event.preventDefault();
+	}
+}
+
+function abc(){
+	
+		window.location="login.html";
+}
+
+</script>
+  </head>
+  <body>
+  
+     
+     <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+<script>
+  //Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAJrpRz5kz1xvG4wIf6O2PA1iybufHZAJw",
+    authDomain: "post-office17.firebaseapp.com",
+    databaseURL: "https://post-office17.firebaseio.com",
+    projectId: "post-office17",
+    storageBucket: "post-office17.appspot.com",
+    messagingSenderId: "660036150120",
+    appId: "1:660036150120:web:b310162c05c3e81bceacdd"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+ 
+
+
+	function writeData(){
+
+	alert("Sign-Up Successfully!!"+firebase);	
+	
+		}
+	
+		
+</script>
+ 
+    <div class="templatemo-flex-row">
+      <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+          <div class="square"></div>
+          <h1>Sign Up</h1>
+        </header>
+        <div class="profile-photo-container">
+          <img src="images/a4745fbc0af64beaa3682c3a0cff09c0.jpg" alt="Profile Photo" class="img-responsive">
+          <div class="profile-photo-overlay"></div>
+        </div>
+        
+        <form class="templatemo-search-form" role="search">
+          <div class="input-group">
+              <button type="submit" class="fa fa-search"></button>
+              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+          </div>
+        </form>
+        <div class="mobile-menu-icon">
+            <i class="fa fa-bars"></i>
+          </div>
+        <nav class="templatemo-left-nav">
+          <ul>
+            <li><a href="index.html"><i class="fa fa-home fa-fw"></i>Dashboard</a></li>
+            <li><a href="data-visualization.html"><i class="fa fa-bar-chart fa-fw"></i>Charts</a></li>
+            <li><a href="data-visualization.html"><i class="fa fa-database fa-fw"></i>Data Visualization</a></li>
+            <li><a href="maps.html"><i class="fa fa-map-marker fa-fw"></i>Maps</a></li>
+            <li><a href="manage-users.html"><i class="fa fa-users fa-fw"></i>Manage Users</a></li>
+            <li><a href="#" class="active"><i class="fa fa-sliders fa-fw"></i>Preferences</a></li>
+            <li><a href="login.html"><i class="fa fa-eject fa-fw"></i>Sign Out</a></li>
+          </ul>
+        </nav>
+      </div>
+      
+      <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+          <div class="row">
+            <nav class="templatemo-top-nav col-lg-12 col-md-12">
+              <ul class="text-uppercase">
+                <li><a href="" class="active">Admin panel</a></li>
+                <li><a href="">Dashboard</a></li>
+                <li><a href="">Overview</a></li>
+                <li><a href="login.html">Sign in form</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <div class="templatemo-content-container">
+          <div class="templatemo-content-widget white-bg">
+            <h2 class="margin-bottom-10">Admin Registration</h2>
+            <p>Fill all the fields required below to complete sign - up.</p>
+            <form action="" class="templatemo-login-form" method="post" enctype="multipart/form-data">
+              <div class="row form-group">
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputFirstName">First Name</label>
+                    <input type="text" class="form-control" id="inputFirstName" placeholder="Enter your first name">                  
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputLastName">Last Name</label>
+                    <input type="text" class="form-control" id="inputLastName" placeholder="Enter your last name">                  
+                </div> 
+              </div>
+              <div class="row form-group">
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputUsername">User Name</label>
+                    <input type="text" class="form-control" id="inputUsername" placeholder="admin user name">                  
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputEmail">Email</label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="admin@company.com">                  
+                </div> 
+              </div>
+              
+              <div class="row form-group">
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputNewPassword">Password</label>
+                    <input type="password" class="form-control" id="inputNewPassword" placeholder="************">
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">                  
+                    <label for="inputConfirmNewPassword">Confirm Password</label>
+                    <input type="password" class="form-control" id="inputConfirmNewPassword" placeholder="************">
+                </div> 
+              </div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              <div class="row form-group"></div>
+              
+              <div class="form-group">
+					<button type="submit" class="templatemo-blue-button width-100" id="btn_SignIn" onClick="validate();">SignUp</button>
+				</div>
+                                       
+            </form>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>        
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>  
+    <script type="text/javascript" src="js/templatemo-script.js"></script>       
+
+  </body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visual Admin Dashboard - Manage Users</title>
+  <meta name="description" content="">
+  <meta name="author" content="templatemo">
+
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/templatemo-style.css" rel="stylesheet">
+
+
+  <link href="css/manageuserstyles.css" rel="stylesheet" type="text/css">
+
+
+  <script>
+
+    function validateFirstName() {
+      var firstName = document.getElementById("inputFirstName").value;
+      if (firstName.length <= 0) {
+        alert("Please enter all the fields");
+        return false;
+      }
+      return true;
+    }
+
+    function validateLastName() {
+      var lastName = document.getElementById("inputLastName").value;
+      if (lastName.length <= 0) {
+        alert("Please enter all the fields");
+        return false;
+      }
+      return true;
+    }
+
+    function validateUserName() {
+      var userName = document.getElementById("inputUsername").value;
+      if (userName.length <= 0) {
+        alert("Please enter all the fields");
+        return false;
+      }
+      return true;
+    }
+
+    function validateEmail() {
+      var email = document.getElementById("inputEmail").value;
+      var at = email.indexOf("@");
+      var dt = email.lastIndexOf(".");
+      var len = email.length;
+
+      if ((at < 2) || (dt - at < 2) || (len - dt < 2)) {
+        alert("Please enter validate Email");
+        return false;
+      }
+      return true;
+    }
+
+    function empID() {
+
+      var empID = document.getElementById("inputEmpId").value;
+      if (empID.length <= 0) {
+        alert("Please enter a valid employee ID");
+        return false;
+      }
+      return true;
+    }
+
+
+
+
+    function clearData() {
+
+      document.getElementById("inputFirstName").value = "";
+      document.getElementById("inputLastName").value = "";
+      document.getElementById("inputUsername").value = "";
+      document.getElementById("inputEmail").value = "";
+      document.getElementById("inputEmpId").value = "";
+
+
+
+
+    }
+
+    function validate() {
+      if (validateFirstName() && validateLastName() && validateUserName() && validateEmail() && empID()) {
+
+        firebase.database().ref("Employee").push({
+          firstName: document.getElementById("inputFirstName").value,
+          lastName: document.getElementById("inputLastName").value,
+          userName: document.getElementById("inputUsername").value,
+          userEmail: document.getElementById("inputEmail").value,
+          empID: document.getElementById("inputEmpId").value
+        });
+        alert("Employee added successfully");
+        clearData();
+        event.preventDefault();
+        location.reload();
+
+      }
+      else {
+        //event.preventDefault();
+      }
+    }
+
+    function abc() {
+
+      window.location = "login.html";
+    }
+
+  </script>
+</head>
+
+<body>
+
+
+  <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-app.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+  <script>
+    //Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyAJrpRz5kz1xvG4wIf6O2PA1iybufHZAJw",
+      authDomain: "post-office17.firebaseapp.com",
+      databaseURL: "https://post-office17.firebaseio.com",
+      projectId: "post-office17",
+      storageBucket: "post-office17.appspot.com",
+      messagingSenderId: "660036150120",
+      appId: "1:660036150120:web:b310162c05c3e81bceacdd"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+
+
+    function deleteEmployee(empID) {
+      console.log(empID);
+      var adaRef = firebase.database().ref('Employee/' + empID);
+      adaRef.remove()
+        .then(function () {
+          location.reload();
+        })
+        .catch(function (error) {
+          alert("Remove failed: " + error.message)
+        });
+    }
+
+    function getData() {
+      var tbl = document.getElementById('empAddTable');
+      var reference = firebase.database().ref("Employee");
+
+      reference.once('value', function (snapshot) {
+
+        snapshot.forEach(function (childSnapshot) {
+
+          var refkey = childSnapshot.key;
+          var firstName = childSnapshot.child("firstName").val();
+          var lastName = childSnapshot.child("lastName").val();
+          var userName = childSnapshot.child("userName").val();
+          var userEmail = childSnapshot.child("userEmail").val();
+          var empID = childSnapshot.child("empID").val();
+
+
+
+          addRow(refkey, tbl, empID, firstName, lastName, userName, userEmail);
+        }
+        );
+      });
+    }
+
+    function addRow(refkey, tbl, id, firstname, lastname, username, email) {
+      var tr = document.createElement('tr');
+
+      addCell(tr, id);
+      addCell(tr, firstname);
+      addCell(tr, lastname);
+      addCell(tr, username);
+      addCell(tr, email);
+      addCell(tr, '<button class="btn btn-warning" onclick=\"updateEmployee(\'' + firstname + '\',\'' + lastname + '\',\'' + username + '\',\'' + email + '\',\'' + refkey + '\')\""> Update </button>');
+      addCell(tr, '<button class="btn btn-danger" onclick=\"deleteEmployee(\'' + refkey + '\')\"">Delete</button>');
+
+      tbl.appendChild(tr)
+
+
+    }
+
+    function addCell(tr, val) {
+      var td = document.createElement('td');
+      td.innerHTML = val;
+      tr.appendChild(td)
+    }
+
+    function updateEmployeeOnSubmit() {
+
+      var firstname = document.getElementById('update-firstname').value;
+      var lastname = document.getElementById('update-lastname').value;
+      var username = document.getElementById('update-username').value;
+      var email = document.getElementById('update-email').value;
+      var refkey = document.getElementById('update-key').value;
+
+      firebase.database().ref('Employee/' + refkey).set({
+        firstName: firstname,
+        lastName: lastname,
+        userEmail: email,
+        userName: username
+      }, function (error) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Update Success');
+        }
+      });
+    }
+
+
+
+    function updateEmployee(firstname, lastname, username, email, refkey) {
+      document.getElementById('id01').style.display = 'block';
+      console.log(firstname);
+      console.log(refkey);
+      document.getElementById('update-firstname').value = firstname;
+      document.getElementById('update-lastname').value = lastname;
+      document.getElementById('update-username').value = username;
+      document.getElementById('update-email').value = email;
+      document.getElementById('update-key').value = refkey;
+    }
+
+
+    function testFunction() {
+      var page = require('webpage').create();
+      page.open('http://www.google.com', function () {
+        setTimeout(function () {
+          page.render('google.png');
+          phantom.exit();
+        }, 200);
+      });
+    }
+
+  </script>
+
+  <button onclick="testFunction()">Test Button</button>
+
+  <div class="templatemo-flex-row">
+    <div class="templatemo-sidebar">
+      <header class="templatemo-site-header">
+        <div class="square"></div>
+        <h1>Sri Lanka Post</h1>
+      </header>
+      <div class="profile-photo-container">
+        <img src="images/a4745fbc0af64beaa3682c3a0cff09c0.jpg" alt="Profile Photo" class="img-responsive">
+        <div class="profile-photo-overlay"></div>
+      </div>
+
+      <form class="templatemo-search-form" role="search">
+        <div class="input-group">
+          <button type="submit" class="fa fa-search"></button>
+          <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+        </div>
+      </form>
+      <div class="mobile-menu-icon">
+        <i class="fa fa-bars"></i>
+      </div>
+      <nav class="templatemo-left-nav">
+        <ul>
+          <li><a href="index.html"><i class="fa fa-home fa-fw"></i>Dashboard</a></li>
+          <li><a href="data-visualization.html"><i class="fa fa-bar-chart fa-fw"></i>Charts</a></li>
+          <li><a href="data-visualization.html"><i class="fa fa-database fa-fw"></i>Data Visualization</a></li>
+          <li><a href="maps.html"><i class="fa fa-map-marker fa-fw"></i>Maps</a></li>
+          <li><a href="#" class="active"><i class="fa fa-users fa-fw"></i>Manage Users</a></li>
+          <li><a href="preferences.html"><i class="fa fa-sliders fa-fw"></i>Preferences</a></li>
+          <li><a href="login.html"><i class="fa fa-eject fa-fw"></i>Sign Out</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="templatemo-content col-1 light-gray-bg">
+      <div class="templatemo-top-nav-container">
+        <div class="row">
+          <nav class="templatemo-top-nav col-lg-12 col-md-12">
+            <ul class="text-uppercase">
+              <li><a href="" class="active">Admin panel</a></li>
+              <li><a href="">Dashboard</a></li>
+              <li><a href="">Overview</a></li>
+              <li><a href="login.html">Sign in form</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-lg-6 col-md-6 form-group">
+          <label for="inputFirstName">First Name</label>
+          <input type="text" class="form-control" id="inputFirstName" placeholder="enter first name">
+        </div>
+        <div class="col-lg-6 col-md-6 form-group">
+          <label for="inputLastName">Last Name</label>
+          <input type="text" class="form-control" id="inputLastName" placeholder="enter last name">
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-lg-6 col-md-6 form-group">
+          <label for="inputUsername">User Name</label>
+          <input type="text" class="form-control" id="inputUsername" placeholder="enter user name">
+        </div>
+        <div class="col-lg-6 col-md-6 form-group">
+          <label for="inputEmail">Email</label>
+          <input type="email" class="form-control" id="inputEmail" placeholder="enter email">
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 form-group">
+        <label for="inputUsername">Employee ID</label>
+        <input type="text" class="form-control" id="inputEmpId" placeholder="enter user name">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="templatemo-blue-button width-30" id="btn_add" onClick="validate()">ADD</button>
+      </div>
+
+
+      <input type="button" id="btnExport" value="Export PDF" onclick="Export()" />
+      <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+      <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+      <script type="text/javascript">
+        function Export() {
+
+
+
+          html2canvas(document.getElementById('empAddTable'), {
+            onrendered: function (canvas) {
+              var data = canvas.toDataURL();
+              var docDefinition = {
+                content: [{
+                  image: data,
+                  width: 500
+                }]
+              };
+              pdfMake.createPdf(docDefinition).download("Report.pdf");
+            }
+          });
+        }
+      </script>
+
+      <script language="javascript">
+
+        function hideCol(columnNo) {
+          console.log(columnNo);
+          var col = columnNo;
+
+          col = parseInt(col, 10);
+          col = col - 1;
+          var tbl = document.getElementById("empAddTable");
+          if (tbl != null) {
+            if (col < 0 || col >= tbl.rows.length - 1) {
+              // alert(col + "Invalid Column " + tbl.rows.length);
+              // return;
+            }
+            for (var i = 0; i < tbl.rows.length; i++) {
+              for (var j = 0; j < tbl.rows[i].cells.length; j++) {
+                tbl.rows[i].cells[j].style.display = "";
+                if (j == col) {
+                  tbl.rows[i].cells[j].style.display = "none";
+
+                  var x = j - 1;
+                  tbl.rows[i].cells[x].style.display = "none";
+                }
+              }
+            }
+          }
+        }
+      </script>
+
+
+      <div class="templatemo-content-container">
+        <div class="templatemo-content-widget no-padding">
+          <div class="panel panel-default table-responsive">
+            <table id="empAddTable" class="table table-striped table-bordered templatemo-user-table">
+              <thead>
+                <tr>
+                  <td><a href="" class="white-text templatemo-sort-by"># <span class="caret"></span></a></td>
+                  <td><a href="" class="white-text templatemo-sort-by">First Name <span class="caret"></span></a></td>
+                  <td><a href="" class="white-text templatemo-sort-by">Last Name <span class="caret"></span></a></td>
+                  <td><a href="" class="white-text templatemo-sort-by">User Name <span class="caret"></span></a></td>
+                  <td><a href="" class="white-text templatemo-sort-by">Email <span class="caret"></span></a></td>
+                  <td>Update</td>
+                  <td>Delete</td>
+                </tr>
+              </thead>
+              <tbody>
+                <script>
+                  getData();
+
+                </script>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="templatemo-flex-row flex-content-row">
+          <div class="col-1"></div>
+        </div>
+        <div class="templatemo-flex-row flex-content-row"></div>
+
+      </div>
+    </div>
+  </div>
+  <!-- -------------------------------------------------->
+  <div id="id01" class="modal">
+
+    <form class="modal-content animate" method="post" onsubmit="updateEmployeeOnSubmit()">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id01').style.display='none'" class="close"
+          title="Close Modal">&times;</span>
+
+      </div>
+
+      <div class="pop-container">
+
+
+        <div class="form-group">
+          <label for="update-firstname">First Name</label>
+          <input type="text" class="form-control" id="update-firstname" aria-describedby="emailHelp" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="update-lastname">Last Name</label>
+          <input type="text" class="form-control" id="update-lastname" aria-describedby="emailHelp" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="update-username">User Name</label>
+          <input type="text" class="form-control" id="update-username" aria-describedby="emailHelp" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="update-email">Email</label>
+          <input type="text" class="form-control" id="update-email" aria-describedby="emailHelp" placeholder="">
+        </div>
+
+        <input type="hidden" id="update-key">
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+      </div>
+    </form>
+  </div>
+
+
+
+
+  <script>
+
+    var modal = document.getElementById('id01');
+
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+  <!-- -------------------------------------------------->
+
+  <!-- JS -->
+  <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+  <script type="text/javascript" src="js/templatemo-script.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      var imageUrl = $('img.content-bg-img').attr('src');
+      $('.templatemo-content-img-bg').css('background-image', 'url(' + imageUrl + ')');
+      $('img.content-bg-img').hide();
+    });
+  </script>
+
+
+
+</body>
+
+</html>
